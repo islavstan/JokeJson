@@ -7,9 +7,20 @@
     android:layout_height="match_parent"
 
     tools:context="com.islavdroid.jokejson.MainActivity">
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/recycler_view"
+  <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="?attr/colorPrimary"
+      android:elevation="6dp"
+      android:minHeight="?attr/actionBarSize"
+      android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+      app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+  </android.support.v7.widget.Toolbar>
+  <android.support.v7.widget.RecyclerView
+      android:layout_below="@id/toolbar"
+      android:id="@+id/recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
       android:scrollbars="vertical" />
 </RelativeLayout>
