@@ -16,6 +16,7 @@ public class Content {
     public Content(String text) {
         this.text = text;
     }
+    public Content() {}
 
     public String getText() {
         return text;

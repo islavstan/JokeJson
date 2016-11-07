@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.islavdroid.jokejson.database.DBHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
 
     private List<Content> list;
-    private boolean checkItem_flag = false;
+    private DBHelper helpher;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView text;
@@ -36,9 +37,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-    public RecyclerViewAdapter(List<Content> list) {
+    public RecyclerViewAdapter(Context context,List<Content> list) {
 
         this.list = list;
+        helpher = new DBHelper(context);
 
     }
 
@@ -52,7 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        Content content = list.get(position);
+        final Content content = list.get(position);
         holder.text.setText(content.getText());
         //in some cases, it will prevent unwanted situations
         holder.checkBox.setOnCheckedChangeListener(null);
@@ -61,7 +63,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                helpher.saveContent(content);
                 list.get(holder.getAdapterPosition()).setSelected(isChecked);
+                Toast.makeText(holder.checkBox.getContext(),"добавленно в избранное",Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,12 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 
+import com.islavdroid.jokejson.database.DBHelper;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerViewAdapter mAdapter;
     private String joke;
     private Drawer navigationDrawer;
-    private ArrayList<Content> jokes =new ArrayList<>();
+    private List<Content> jokes =new ArrayList<>();
+    private DBHelper dbHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+      dbHelper =new DBHelper(MainActivity.this);
 
         //---------------------------navigationDrawer--------------------------
         navigationDrawer = new DrawerBuilder().withActivity(this).withTranslucentStatusBar(false)
@@ -100,7 +106,34 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withSelectable(false));
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                pDialog = new ProgressDialog(MainActivity.this);
+                pDialog.setMessage("Загрузка...");
+                pDialog.setCancelable(false);
+                pDialog.show();
+                navigationDrawer.closeDrawer();
+                Handler handler=new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (pDialog.isShowing())
+                            pDialog.dismiss();
+
+                    }
+                },500);
+
+                jokes=dbHelper.getContentFromDB();
+                mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(mAdapter);
+                return true;
+            }
+        }));
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Ссылка на сайт").withIcon(R.drawable.star).withSelectable(false));
 
         //---------------------------navigationDrawer--------------------------
 
@@ -168,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
-            mAdapter =new RecyclerViewAdapter(jokes);
+            mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
