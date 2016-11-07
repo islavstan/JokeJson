@@ -2,7 +2,7 @@ package com.islavdroid.jokejson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.app.Activity;
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerViewAdapter mAdapter;
     private String joke;
     private Drawer navigationDrawer;
-   private ArrayList<Content> jokes =new ArrayList<>();
+    private ArrayList<Content> jokes =new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,22 +102,17 @@ public class MainActivity extends AppCompatActivity {
         }));
         navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withSelectable(false));
 
-
-
-
-
         //---------------------------navigationDrawer--------------------------
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        new GetJokes().execute();
+        new GetContent().execute();
     }
 
 
    public void changeContent(int i){
        type=i;
        jokes.clear();
-       new GetJokes().execute();
+       new GetContent().execute();
        navigationDrawer.closeDrawer();
    }
 
@@ -131,11 +126,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.refresh){
             jokes.clear();
-            new GetJokes().execute();
+            new GetContent().execute();
         }
         return false;
     }
-    private class GetJokes extends AsyncTask<Void, Void, Void> {
+    private class GetContent extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -151,8 +146,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             for(int i=0;i<50;i++){
-
-            HttpHandler jParser =new HttpHandler();
+                HttpHandler jParser =new HttpHandler();
             String jsonStr = jParser.makeServiceCall(url+type);
             // Getting JSON from URL
             if (jsonStr != null) {
@@ -160,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     joke=jsonObj.getString("content");
                     Content content =new Content(joke);
-                    jokes.add(0,content);
+                    jokes.add(content);
 
                 }catch (final JSONException e) {
 
@@ -178,12 +172,7 @@ public class MainActivity extends AppCompatActivity {
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
-
             recyclerView.setAdapter(mAdapter);
-
-
-
-
         }
     }
 }

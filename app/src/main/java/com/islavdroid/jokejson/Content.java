@@ -2,7 +2,16 @@ package com.islavdroid.jokejson;
 
 
 public class Content {
-    String text;
+    private String text;
+    private boolean selected;
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
     public Content(String text) {
         this.text = text;
