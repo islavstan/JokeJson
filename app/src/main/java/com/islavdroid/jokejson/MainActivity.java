@@ -4,8 +4,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +25,10 @@ import android.view.View;
 import com.islavdroid.jokejson.adapters.DBAdapter;
 import com.islavdroid.jokejson.adapters.RecyclerViewAdapter;
 import com.islavdroid.jokejson.database.DBHelper;
+import com.islavdroid.jokejson.fragments.FavoriteFragment;
 import com.islavdroid.jokejson.fragments.InfoFragment;
+import com.islavdroid.jokejson.fragments.JokesFragment;
+import com.islavdroid.jokejson.fragments.NoInternetFragment;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -42,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Content> jokes =new ArrayList<>();
     private DBHelper dbHelper;
     private DBAdapter dbAdapter;
-
+  private Fragment fragment=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
+
+
+
       dbHelper =new DBHelper(MainActivity.this);
 
         //---------------------------navigationDrawer--------------------------
@@ -64,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                changeContent(1);
+
                 return true;
             }
         }));
@@ -112,31 +127,58 @@ public class MainActivity extends AppCompatActivity {
         navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                jokes.clear();
-                new GetContentFromDB().execute();
+             fragment =new FavoriteFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
                 navigationDrawer.closeDrawer();
                 return true;
+
             }
         }));
         navigationDrawer.addItem(new PrimaryDrawerItem().withName("Инфо").withIcon(R.drawable.ic_information_button).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-
+          fragment =new InfoFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+                navigationDrawer.closeDrawer();
                 return true;
             }
         }));
 
         //---------------------------navigationDrawer--------------------------
+navigationDrawer.setSelectionAtPosition(0);
+     //   changeContent(1);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        new GetContent().execute();
+
+
+
+
+
+
     }
 
 
-   public void changeContent(int i){
-       type=i;
-       jokes.clear();
-       new GetContent().execute();
+    public static boolean isOnline(Context context)
+    {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting())
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+   public void changeContent(int type){
+       fragment =new JokesFragment(url+type);
+       FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+       ft.replace(R.id.content_frame, fragment);
+       ft.commit();
        navigationDrawer.closeDrawer();
    }
 
@@ -149,8 +191,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.refresh){
-            jokes.clear();
-            new GetContent().execute();
+           // jokes.clear();
+           // new GetContent().execute();
         }
         return false;
     }

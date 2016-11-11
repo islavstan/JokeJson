@@ -1,12 +1,16 @@
 package com.islavdroid.jokejson.adapters;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,11 +29,14 @@ public class DBAdapter  extends RecyclerView.Adapter<DBAdapter.MyViewHolder> {
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView text;
         public CheckBox checkBox;
+        public ImageButton copy,share;
 
         public MyViewHolder(View view) {
             super(view);
             text = (TextView) view.findViewById(R.id.text);
             checkBox=(CheckBox) view.findViewById(R.id.star);
+            copy =(ImageButton)view.findViewById(R.id.copy);
+            share =(ImageButton)view.findViewById(R.id.share);
 
         }
 
@@ -56,6 +63,35 @@ public class DBAdapter  extends RecyclerView.Adapter<DBAdapter.MyViewHolder> {
         final Content content = list.get(position);
 
         holder.text.setText(content.getText());
+
+
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                String text = content.getText();
+                sendIntent.putExtra(Intent.EXTRA_TEXT,text );
+                sendIntent.setType("text/plain");
+                holder.share.getContext().startActivity(sendIntent);
+            }
+        });
+
+
+
+
+        holder.copy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) holder.copy.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                String text = content.getText();
+                ClipData myClip = ClipData.newPlainText("text", text);
+                clipboard.setPrimaryClip(myClip);
+                Toast.makeText(holder.copy.getContext(),"текст скопирован в буфер обмена",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
         //in some cases, it will prevent unwanted situations
        // holder.checkBox.setOnCheckedChangeListener(null);
         //if true, your checkbox will be selected, else unselected

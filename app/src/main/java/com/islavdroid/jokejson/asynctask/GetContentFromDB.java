@@ -7,16 +7,30 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.islavdroid.jokejson.Content;
+import com.islavdroid.jokejson.MainActivity;
+import com.islavdroid.jokejson.adapters.DBAdapter;
 import com.islavdroid.jokejson.adapters.RecyclerViewAdapter;
+import com.islavdroid.jokejson.database.DBHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-
-public class GetContentFromDB /*extends AsyncTask<Void, Void, Void> */{
- /*   ProgressDialog pDialog;
+public class GetContentFromDB extends AsyncTask<Void, Void, Void> {
+    ProgressDialog pDialog;
     private Context mContext;
+    private List<Content> jokes =new ArrayList<>();
+    private DBHelper dbHelper;
+    private DBAdapter dbAdapter;
+    private RecyclerView recyclerView;
 
-    public GetContentFromDB (Context context){
+
+    public GetContentFromDB (Context context,RecyclerView recyclerView){
         mContext = context;
+        dbHelper =new DBHelper(context);
+        this.recyclerView=recyclerView;
+
     }
     @Override
     protected void onPreExecute() {
@@ -38,10 +52,10 @@ public class GetContentFromDB /*extends AsyncTask<Void, Void, Void> */{
         super.onPostExecute(aVoid);
         if (pDialog.isShowing())
             pDialog.dismiss();
-        mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        dbAdapter = new DBAdapter(mContext,jokes);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
-    }*/
+        recyclerView.setAdapter(dbAdapter);
+    }
 }
