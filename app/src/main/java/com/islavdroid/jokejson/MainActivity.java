@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 
+import com.islavdroid.jokejson.adapters.DBAdapter;
+import com.islavdroid.jokejson.adapters.RecyclerViewAdapter;
 import com.islavdroid.jokejson.database.DBHelper;
+import com.islavdroid.jokejson.fragments.InfoFragment;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private Drawer navigationDrawer;
     private List<Content> jokes =new ArrayList<>();
     private DBHelper dbHelper;
+    private DBAdapter dbAdapter;
 
 
     @Override
@@ -115,7 +118,13 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Ссылка на сайт").withIcon(R.drawable.star));
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Инфо").withIcon(R.drawable.ic_information_button).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+
+                return true;
+            }
+        }));
 
         //---------------------------navigationDrawer--------------------------
 
@@ -168,11 +177,12 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             if (pDialog.isShowing())
                 pDialog.dismiss();
-            mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
+            dbAdapter = new DBAdapter(getApplicationContext(),jokes);
+           // mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
-            recyclerView.setAdapter(mAdapter);
+            recyclerView.setAdapter(dbAdapter);
         }
     }
 

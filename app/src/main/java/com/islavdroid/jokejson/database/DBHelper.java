@@ -72,4 +72,10 @@ public class DBHelper extends SQLiteOpenHelper {
         //пересоздаём
         onCreate(db);
     }
+
+    public void delete(String text){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE, "TEXT" + " = ?", new String[]{text});
+        db.close();
+    }
 }

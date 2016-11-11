@@ -1,4 +1,4 @@
-package com.islavdroid.jokejson;
+package com.islavdroid.jokejson.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,18 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.islavdroid.jokejson.Content;
+import com.islavdroid.jokejson.R;
 import com.islavdroid.jokejson.database.DBHelper;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 
-
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
+public class DBAdapter  extends RecyclerView.Adapter<DBAdapter.MyViewHolder> {
 
     private List<Content> list;
     private DBHelper helpher;
@@ -37,35 +36,45 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-    public RecyclerViewAdapter(Context context,List<Content> list) {
+    public DBAdapter(Context context, List<Content> list) {
 
-        this.list = list;
+
         helpher = new DBHelper(context);
-
+        this.list = list;
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DBAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_row, parent, false);
 
-        return new MyViewHolder(itemView);
+        return new DBAdapter.MyViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final DBAdapter.MyViewHolder holder, final int position) {
         final Content content = list.get(position);
+
         holder.text.setText(content.getText());
         //in some cases, it will prevent unwanted situations
-        holder.checkBox.setOnCheckedChangeListener(null);
+       // holder.checkBox.setOnCheckedChangeListener(null);
         //if true, your checkbox will be selected, else unselected
-        holder.checkBox.setChecked(list.get(position).isSelected());
+
+        holder.checkBox.setChecked(true);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                helpher.saveContent(content);
+                //здесь нужно удалять из избранного
+             helpher.delete(content.getText());
+                deleteItem(position);
+                Toast.makeText(holder.checkBox.getContext(),"Удалено",Toast.LENGTH_SHORT).show();
+
+
+
+
+               /* helpher.saveContent(content);
                 list.get(holder.getAdapterPosition()).setSelected(isChecked);
-                Toast.makeText(holder.checkBox.getContext(),"добавленно в избранное",Toast.LENGTH_SHORT).show();
+                Toast.makeText(holder.checkBox.getContext(),"добавленно в избранное",Toast.LENGTH_SHORT).show();*/
             }
         });
     }
@@ -74,5 +83,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public int getItemCount() {
         return list.size();
+    }
+    private void deleteItem(int position){
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position,list.size());
+        list.remove(position);
     }
 }
