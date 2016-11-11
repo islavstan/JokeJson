@@ -57,83 +57,65 @@ public class MainActivity extends AppCompatActivity {
 
         navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
 
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Анекдоты").withIcon(R.drawable.ic_joker).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Анекдоты").withIcon(R.drawable.ic_joker).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                changeContent(1);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Рассказы").withIcon(R.drawable.ic_story).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Рассказы").withIcon(R.drawable.ic_story).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 changeContent(2);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Стишки").withIcon(R.drawable.poem).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Стишки").withIcon(R.drawable.poem).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 changeContent(3);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Афоризмы").withIcon(R.drawable.ic_a).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Афоризмы").withIcon(R.drawable.ic_a).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 changeContent(4);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Цитаты").withIcon(R.drawable.ic_quotation).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Цитаты").withIcon(R.drawable.ic_quotation).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 changeContent(5);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Тосты").withIcon(R.drawable.ic_tost).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Тосты").withIcon(R.drawable.ic_tost).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 changeContent(6);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Статусы").withIcon(R.drawable.ic_check_black_24px).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Статусы").withIcon(R.drawable.ic_check_black_24px).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 changeContent(8);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withSelectable(false).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                pDialog = new ProgressDialog(MainActivity.this);
-                pDialog.setMessage("Загрузка...");
-                pDialog.setCancelable(false);
-                pDialog.show();
+                jokes.clear();
+                new GetContentFromDB().execute();
                 navigationDrawer.closeDrawer();
-                Handler handler=new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (pDialog.isShowing())
-                            pDialog.dismiss();
-
-                    }
-                },500);
-
-                jokes=dbHelper.getContentFromDB();
-                mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
-                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-                recyclerView.setLayoutManager(mLayoutManager);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(mAdapter);
                 return true;
             }
         }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Ссылка на сайт").withIcon(R.drawable.star).withSelectable(false));
+        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Ссылка на сайт").withIcon(R.drawable.star));
 
         //---------------------------navigationDrawer--------------------------
 
@@ -163,6 +145,42 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
+
+    private class GetContentFromDB extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Загрузка...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            jokes=dbHelper.getContentFromDB();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            mAdapter =new RecyclerViewAdapter(getApplicationContext(),jokes);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(mAdapter);
+        }
+    }
+
+
+
+
+
+
     private class GetContent extends AsyncTask<Void, Void, Void> {
 
         @Override

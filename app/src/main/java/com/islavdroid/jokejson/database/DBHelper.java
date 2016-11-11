@@ -19,9 +19,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "joke_database";
     public static final String TABLE ="joke_table";
     public static final String TEXT_COLUMN ="text";
+    public static final String CHK_VALUES = "checkbox_value";
 
     public static final String TABLE_CREATE_SCRIPT ="CREATE TABLE "+TABLE + " ("+ BaseColumns._ID+
-            " INTEGER PRIMARY KEY AUTOINCREMENT, "+ TEXT_COLUMN+ " TEXT NOT NULL );";
+            " INTEGER PRIMARY KEY AUTOINCREMENT, "+ TEXT_COLUMN+ " TEXT NOT NULL, "+CHK_VALUES+" NUMERIC );";
 
     public DBHelper(Context context) {
         super(context,DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,10 +38,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public void saveContent(Content content) {
         ContentValues newValues = new ContentValues();
         newValues.put(TEXT_COLUMN,content.getText());
+        newValues.put(CHK_VALUES,content.isSelected());
         getWritableDatabase().insert(TABLE,null,newValues);
     }
 
-    public List<Content> getContentFromDB(){
+        public List<Content> getContentFromDB(){
         List<Content> contentList = new ArrayList<Content>();
         String query = "select * from "+TABLE;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -49,6 +51,11 @@ public class DBHelper extends SQLiteOpenHelper {
             do {
                 Content content = new Content();
                 content.setText(cursor.getString(1));
+
+                //Получить значение столбца CHK_VALUES. Оно хранится
+                // в базе данных в числовом виде:1 — да, 0 — нет
+                boolean selected = (cursor.getInt(2) == 1);
+                content.setSelected(selected);
                 contentList.add(content);}
             while (cursor.moveToNext());}
             return  contentList;
