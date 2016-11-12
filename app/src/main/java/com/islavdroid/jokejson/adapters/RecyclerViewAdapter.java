@@ -101,10 +101,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                helpher.saveContent(content);
-                list.get(holder.getAdapterPosition()).setSelected(isChecked);
-                Toast.makeText(holder.checkBox.getContext(),"добавленно в избранное",Toast.LENGTH_SHORT).show();
+                if (holder.checkBox.isChecked()) {
+                    helpher.saveContent(content);
+                    list.get(holder.getAdapterPosition()).setSelected(isChecked);
+                    Toast.makeText(holder.checkBox.getContext(), "добавленно в избранное", Toast.LENGTH_SHORT).show();
+                }else {
+                     helpher.delete(content.getText());
+                    list.get(holder.getAdapterPosition()).setSelected(isChecked);
+                    Toast.makeText(holder.checkBox.getContext(), "удалено из избранного", Toast.LENGTH_SHORT).show();
+                }
             }
+
         });
     }
 

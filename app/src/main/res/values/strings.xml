@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">JokeJson</string>
+    <string name="banner_id">JokeJson</string>
 </resources>

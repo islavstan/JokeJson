@@ -20,6 +20,9 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 
 import com.islavdroid.jokejson.adapters.DBAdapter;
@@ -34,12 +37,23 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     private ProgressDialog pDialog;
+    /*<com.google.android.gms.ads.AdView
+    android:layout_alignParentBottom="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/banner"
+    ads:adSize="SMART_BANNER"
+     </com.google.android.gms.ads.AdView>
+            >*/
+
 
     private static String url = "http://rzhunemogu.ru/RandJSON.aspx?CType=";
     private int type =1;
@@ -51,126 +65,147 @@ public class MainActivity extends AppCompatActivity {
     private DBHelper dbHelper;
     private DBAdapter dbAdapter;
   private Fragment fragment=null;
+    private RelativeLayout no_internet;
+    private Button onlineButton;
+    private    Toolbar toolbar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
-
-
-
-      dbHelper =new DBHelper(MainActivity.this);
-
-        //---------------------------navigationDrawer--------------------------
-        navigationDrawer = new DrawerBuilder().withActivity(this).withTranslucentStatusBar(false)
-                .withToolbar(toolbar).
-                        withDrawerGravity(Gravity.LEFT).withSavedInstance(savedInstanceState)
-                .withSelectedItem(-1).build();
-
-        navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Анекдоты").withIcon(R.drawable.ic_joker).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        no_internet =(RelativeLayout)findViewById(R.id.no_internet_layout);
+        onlineButton =(Button)findViewById(R.id.onlineButton);
+        dbHelper = new DBHelper(MainActivity.this);
+        setTitle("Анекдоты");
+        onlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            public void onClick(View v) {
+            loadData(savedInstanceState);
+            }
+        });
+
+if(isOnline()) {
+
+
+  loadData(savedInstanceState);
+
+   }
+else{
+    no_internet.setVisibility(View.VISIBLE);
+
+}}
+
+
+
+   public void loadData(Bundle savedInstance){
+       if(isOnline()) {
+           no_internet.setVisibility(View.GONE);
+       navigationDrawer = new DrawerBuilder().withActivity(this).withTranslucentStatusBar(false)
+               .withToolbar(toolbar).
+                       withDrawerGravity(Gravity.LEFT).withSavedInstance(savedInstance)
+               .withSelectedItem(-1).build();
+
+       navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Анекдоты").withIcon(R.drawable.ic_joker).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                changeContent(1);
+               setTitle("Анекдоты");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Рассказы").withIcon(R.drawable.ic_story).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               changeContent(2);
+               setTitle("Рассказы");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Стишки").withIcon(R.drawable.poem).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               changeContent(3);
+               setTitle("Стишки");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Афоризмы").withIcon(R.drawable.ic_a).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               changeContent(4);
+               setTitle("Афоризмы");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Цитаты").withIcon(R.drawable.ic_quotation).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               changeContent(5);
+               setTitle("Цитаты");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Тосты").withIcon(R.drawable.ic_tost).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               changeContent(6);
+               setTitle("Тосты");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Статусы").withIcon(R.drawable.ic_check_black_24px).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               changeContent(8);
+               setTitle("Статусы");
+               return true;
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               fragment = new FavoriteFragment();
+               setTitle("Избранное");
+               FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+               ft.replace(R.id.content_frame, fragment);
+               ft.commit();
+               navigationDrawer.closeDrawer();
+               return true;
 
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Рассказы").withIcon(R.drawable.ic_story).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                changeContent(2);
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Стишки").withIcon(R.drawable.poem).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                changeContent(3);
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Афоризмы").withIcon(R.drawable.ic_a).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                changeContent(4);
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Цитаты").withIcon(R.drawable.ic_quotation).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                changeContent(5);
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Тосты").withIcon(R.drawable.ic_tost).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                changeContent(6);
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Статусы").withIcon(R.drawable.ic_check_black_24px).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                changeContent(8);
-                return true;
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Избранное").withIcon(R.drawable.star).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-             fragment =new FavoriteFragment();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.content_frame, fragment);
-                ft.commit();
-                navigationDrawer.closeDrawer();
-                return true;
-
-            }
-        }));
-        navigationDrawer.addItem(new PrimaryDrawerItem().withName("Инфо").withIcon(R.drawable.ic_information_button).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-          fragment =new InfoFragment();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.content_frame, fragment);
-                ft.commit();
-                navigationDrawer.closeDrawer();
-                return true;
-            }
-        }));
-
-        //---------------------------navigationDrawer--------------------------
-navigationDrawer.setSelectionAtPosition(0);
-     //   changeContent(1);
-
-
-
-
-
-
-
-    }
+           }
+       }));
+       navigationDrawer.addItem(new PrimaryDrawerItem().withName("Инфо").withIcon(R.drawable.ic_information_button).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+           @Override
+           public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+               fragment = new InfoFragment();
+               setTitle("Инфо");
+               FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+               ft.replace(R.id.content_frame, fragment);
+               ft.commit();
+               navigationDrawer.closeDrawer();
+               return true;
+           }
+       }));
 
 
-    public static boolean isOnline(Context context)
-    {
+       navigationDrawer.setSelectionAtPosition(0);
+
+
+
+   }else{
+           no_internet.setVisibility(View.VISIBLE);
+       }
+   }
+
+    public boolean isOnline() {
         ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting())
-        {
-            return true;
-        }
-        return false;
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 
@@ -182,7 +217,7 @@ navigationDrawer.setSelectionAtPosition(0);
        navigationDrawer.closeDrawer();
    }
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
@@ -196,7 +231,7 @@ navigationDrawer.setSelectionAtPosition(0);
         }
         return false;
     }
-
+*/
 
     private class GetContentFromDB extends AsyncTask<Void, Void, Void> {
         @Override
