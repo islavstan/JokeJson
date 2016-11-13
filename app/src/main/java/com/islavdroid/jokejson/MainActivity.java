@@ -31,28 +31,20 @@ import com.islavdroid.jokejson.database.DBHelper;
 import com.islavdroid.jokejson.fragments.FavoriteFragment;
 import com.islavdroid.jokejson.fragments.InfoFragment;
 import com.islavdroid.jokejson.fragments.JokesFragment;
-import com.islavdroid.jokejson.fragments.NoInternetFragment;
+
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import java.net.InetAddress;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     private ProgressDialog pDialog;
-    /*<com.google.android.gms.ads.AdView
-    android:layout_alignParentBottom="true"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:id="@+id/banner"
-    ads:adSize="SMART_BANNER"
-     </com.google.android.gms.ads.AdView>
-            >*/
+
 
 
     private static String url = "http://rzhunemogu.ru/RandJSON.aspx?CType=";
@@ -79,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         onlineButton =(Button)findViewById(R.id.onlineButton);
         dbHelper = new DBHelper(MainActivity.this);
         setTitle("Анекдоты");
+
+        Ads.showBanner(this);
+
         onlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
