@@ -31,7 +31,8 @@ import java.util.List;
 
 public class JokesFragment extends Fragment {
     private ProgressDialog pDialog;
-    private  String url ;
+    private static String url = "http://rzhunemogu.ru/RandJSON.aspx?CType=";
+    private int type;
     private boolean isLoading =false;
     Parcelable state;
     private String joke;
@@ -40,9 +41,9 @@ public class JokesFragment extends Fragment {
     private RecyclerView recyclerView;
     LinearLayoutManager mLayoutManager;
     public JokesFragment(){}
-    public JokesFragment (String url){
+   /* public JokesFragment (String url){
         this.url=url;
-    }
+    }*/
 
 
 
@@ -54,6 +55,10 @@ public class JokesFragment extends Fragment {
             recyclerView =(RecyclerView) view.findViewById(R.id.recycler_view);
         new GetContent(getActivity()).execute();
 
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+             type = bundle.getInt("key");
+        }
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -102,7 +107,7 @@ Context context;
         protected Void doInBackground(Void... arg0) {
             for(int i=0;i<30;i++){
                 HttpHandler jParser =new HttpHandler();
-                String jsonStr = jParser.makeServiceCall(url);
+                String jsonStr = jParser.makeServiceCall(url+type);
                 // Getting JSON from URL
                 if (jsonStr != null) {
                     try {
@@ -134,11 +139,6 @@ Context context;
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(mAdapter);
-
-
-
-
-
         }
     }
 
@@ -164,7 +164,7 @@ Context context;
         protected Void doInBackground(Void... arg0) {
             for(int i=0;i<30;i++){
                 HttpHandler jParser =new HttpHandler();
-                String jsonStr = jParser.makeServiceCall(url);
+                String jsonStr = jParser.makeServiceCall(url+type);
                 // Getting JSON from URL
                 if (jsonStr != null) {
                     try {
@@ -188,19 +188,6 @@ Context context;
                 pDialog.dismiss();
             isLoading=false;
             mAdapter.notifyDataSetChanged();
-            // mAdapter.notifyItemRangeInserted(0,jokes.size());
-            // final int positionStart = jokes.size() + 1;
-            //  mAdapter.notifyItemRangeChanged(0,mAdapter.getItemCount());
-
-           // mLayoutManager = new LinearLayoutManager(context);
-            //recyclerView.setLayoutManager(mLayoutManager);
-           // recyclerView.setItemAnimator(new DefaultItemAnimator());
-           // recyclerView.setAdapter(mAdapter);
-
-
-
-
-
         }
     }
 

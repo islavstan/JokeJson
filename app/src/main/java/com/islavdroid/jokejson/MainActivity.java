@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static String url = "http://rzhunemogu.ru/RandJSON.aspx?CType=";
+    private static String key = "key";
     private int type =1;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter mAdapter;
@@ -205,12 +206,25 @@ else{
 
 
    public void changeContent(int type){
-       fragment =new JokesFragment(url+type);
+       fragment =new JokesFragment();
+       Bundle bundle = new Bundle();
+       bundle.putInt(key, type);
+       fragment.setArguments(bundle);
        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
        ft.replace(R.id.content_frame, fragment);
        ft.commit();
        navigationDrawer.closeDrawer();
    }
+
+
+
+  /*  public void changeContent(int type){
+        fragment =new JokesFragment(url+type);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();
+        navigationDrawer.closeDrawer();
+    }*/
 
    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {

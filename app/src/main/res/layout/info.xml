@@ -7,8 +7,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/link"
         android:layout_margin="16dp"
-        android:text="Весь материал взят с сайта rzhunemogu.ru"
+
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="normal|bold" />
